@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Contact Form</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        #form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Ensures padding is included in the width */
+        }
+
+            input:focus, select:focus {
+                border-color: #007bff;
+                outline: none; /* Removes the default outline */
+            }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            margin: -10px 0 10px;
+        }
+
+        .input-error {
+            border: 1px solid red;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* Toast Styles */
+        .toast {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            text-align: center; /* Center the text */
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" id="form">
+        <input type="hidden" name="access_key" value="7dd92468-9c40-439b-bdd9-7632e971aa4c">
+
+        <div>
+            <input type="text" name="name" placeholder="Your Name">
+            <div class="error" id="nameError"></div>
+        </div>
+
+        <div>
+            <input type="email" name="email" placeholder="Your Email">
+            <div class="error" id="emailError"></div>
+        </div>
+
+        <div>
+            <input type="text" name="mobile" placeholder="Mobile Number" maxlength="10">
+            <div class="error" id="mobileError"></div>
+        </div>
+
+        <div>
+            <select name="div">
+                <option value="" disabled selected>Select Division</option>
+                <option value="div7">Div7</option>
+                <option value="div8">Div8</option>
+                <option value="div9">Div9</option>
+            </select>
+            <div class="error" id="divError"></div>
+        </div>
+
+        <button type="submit">Submit Form</button>
+        <div id="result"></div>
+    </form>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const form = document.getElementById('form');
+        const result = document.getElementById('result');
+        const toast = document.getElementById('toast');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Clear previous error messages
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => error.innerHTML = '');
+
+            let isValid = true;
+
+            // Validate name
+            const nameInput = form.name.value.trim();
+            if (nameInput === '') {
+                document.getElementById('nameError').innerHTML = 'Name is required.';
+                form.name.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validate email
+            const emailInput = form.email.value.trim();
+            if (emailInput === '' || !/\S+@\S+\.\S+/.test(emailInput)) {
+                document.getElementById('emailError').innerHTML = 'Valid email is required.';
+                form.email.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validate mobile number
+            const mobileInput = form.mobile.value.trim();
+            if (mobileInput.length !== 10 || isNaN(mobileInput)) {
+                document.getElementById('mobileError').innerHTML = 'Mobile number must be 10 digits.';
+                form.mobile.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validate division
+            const divInput = form.div.value;
+            if (!divInput) {
+                document.getElementById('divError').innerHTML = 'Division is required.';
+                form.div.classList.add('input-error');
+                isValid = false;
+            }
+
+            if (!isValid) return; // Stop the submission if there are validation errors
+
+            const formData = new FormData(form);
+            const object = Object.fromEntries(formData);
+            const json = JSON.stringify(object);
+
+            result.innerHTML = "Open assignments. Please wait...";
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            })
+                .then(async (response) => {
+                    let json = await response.json();
+                    if (response.status == 200) {
+                        result.innerHTML = json.message;
+
+                        // Show toast message in the center
+                        showToast("We open assignments!");
+
+                        // Redirect after a successful submission
+                        setTimeout(() => {
+                            window.location.href = 'https://drive.google.com/drive/folders/1---2v8f0iRbcDNuLWwDFJAqigocv2f15?usp=drive_link';
+                        }, 3000);
+                    } else {
+                        console.log(response);
+                        result.innerHTML = json.message;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    result.innerHTML = "Something went wrong!";
+                })
+                .finally(() => {
+                    form.reset();
+                    setTimeout(() => {
+                        result.style.display = "none";
+                    }, 3000);
+                });
+        });
+
+        function showToast(message) {
+            toast.innerHTML = message;
+            toast.style.display = 'block';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
