@@ -1,29 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Otpless Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        /* Ensures full screen layout on mobile */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Centering the content */
+        #otpless-login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Make the login page area responsive */
+        .content {
+            width: 100%;
+            max-width: 480px; /* Limiting width on larger screens */
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Optional styling for a cleaner appearance */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile-friendly design */
+        media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            .content {
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="otpless-login-page"></div>
+    <div id="otpless-login-page">
+     
+    </div>
 
     <script id="otpless-sdk"
             type="text/javascript"
-            data-appid="AGO4AK38P5T4PFSEJGST" 
-            src="https://otpless.com/v3/auth.js"> 
+            data-appid="AGO4AK38P5T4PFSEJGST"
+            src="https://otpless.com/v3/auth.js">
     </script>
 
-    <script> 
-        function otpless(otplessUser) { 
-            const token = otplessUser.token; 
-            console.log('Token:', token); 
-            console.log('User Details:', JSON.stringify(otplessUser)); 
+    <script>
+        function otpless(otplessUser) {
+            const token = otplessUser.token;
+            console.log('Token:', token);
+            console.log('User Details:', JSON.stringify(otplessUser));
 
-            // Redirect to ChatGPT page after successful login 
-            window.location.href = "https://drive.google.com/drive/folders/13k4hglJNLI8GEBb28qP4kJF8DQ1Vu6Av?usp=drive_link";  // Replace with the actual ChatGPT URL if needed
-        } 
-    </script> 
+            // Redirect to Google Drive link after successful login
+            window.location.href = "https://drive.google.com/drive/folders/13k4hglJNLI8GEBb28qP4kJF8DQ1Vu6Av?usp=drive_link";  
+        }
+    </script>
 
 </body>
 </html>
